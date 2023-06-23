@@ -1,27 +1,101 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Authentication App Laravel Backend Project (The backend for the Auth App Website deployed [here](https://authapp-adeoluwa.netlify.app/)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This project was developed using `PHP` v "^8.0.2" and `Laravel` v "^9.11" libraries.
 
-## About Template
-Created with a CMD running PHP `8.0.2`, runs a Laravel version of `9.*.*`
+The Auth App Website was deployed with `Netlify` link [here](https://authapp-adeoluwa.netlify.app/).
 
-## Contributing
+Figma design was provided by [devChallenges.io](https://devchallenges.io/).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+You can clone the project and customise it at your end.
 
-## Code of Conduct
+## API Documentation
+*http://127.0.0.1:8000/check Endpoint (server health check)*
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- METHOD: 'GET'
 
-## Security Vulnerabilities
+- SUCCESS RESPONSE (200): {'success': true}
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- ERROR RESPONSE (4**, 5**): {'success': false, 'message': '***********'}
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+*http://127.0.0.1:8000/api/v1/auth/signup Endpoint*
+
+- METHOD: 'POST'
+
+- REQUEST BODY: {
+  "email": "JohnDoe@gmail.com",
+  "password": "ty12243fghhh",
+  "provider": "LOCAL",
+  }
+
+- SUCCESS RESPONSE (200): {
+  'success': true,
+  'authToken': '**********',
+  'refreshToken': '**********',
+  'data': {}
+  }
+
+- ERROR RESPONSE (4**, 5**): {'***********'}
+
+*http://127.0.0.1:8000/api/v1/auth/login Endpoint*
+
+- METHOD: 'POST'
+
+- REQUEST BODY: {
+  "email": "JohnDoe@gmail.com",
+  "password": "ty12243fghhh",
+  "provider": "LOCAL",
+  }
+
+- SUCCESS RESPONSE (200): {
+  'success': true,
+  'authToken': '**********',
+  'refreshToken': '**********',
+  'data': {}
+  }
+
+- ERROR RESPONSE (4**, 5**): {'***********'}
+
+*http://127.0.0.1:8000/api/v1/auth/refreshToken Endpoint*
+
+- METHOD: 'POST'
+
+- REQUEST BODY: {
+  "refreshToken": "awerra233",
+  }
+
+- SUCCESS RESPONSE (200): {
+  'success': true,
+  'authToken': '**********',
+  'refreshToken': '**********',
+  'data': {}
+  }
+
+- ERROR RESPONSE (4**, 5**): {'***********'}
+
+*http://127.0.0.1:8000/api/v1/user/profile Endpoint (Protected)*
+
+- METHOD: 'GET'
+
+- AUTHORIZATION: 'Bearer <access_token>'
+
+- SUCCESS RESPONSE (200): {'success': true, 'data': {}}
+
+- ERROR RESPONSE (4**, 5**): {'success': false, 'message': '***********'}
+
+*http://127.0.0.1:8000/api/v1/user/editProfile Endpoint (Protected)*
+
+- METHOD: 'PUT'
+
+- AUTHORIZATION: 'Bearer <access_token>'
+
+- REQUEST BODY: {
+  "name": "JohnDoe@gmail.com",
+  "bio": "ty12243fghhh",
+  "image": "*****",
+  "phoneNumber": 23244242,
+  }
+
+- SUCCESS RESPONSE (200): {'success': true,  'data': {}}
+
+- ERROR RESPONSE (4**, 5**): {'success': false, 'message': '***********'}
