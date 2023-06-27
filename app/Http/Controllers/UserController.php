@@ -33,7 +33,7 @@ class UserController extends Controller
 
         if ($validator->fails()) {
             return Response::json([
-                'success' => 'false',
+                'success' => false,
                 'error' => $validator->errors()
             ], 400);
         };

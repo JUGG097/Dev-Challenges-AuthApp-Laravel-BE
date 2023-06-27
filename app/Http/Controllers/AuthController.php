@@ -18,7 +18,10 @@ class AuthController extends Controller
     public function userSignUp(Request $req)
     {
         // Validate the request body
-        $this->requestValidator($req);
+        $validation_result = $this->requestValidator($req);
+        if ($validation_result) {
+            return $validation_result;
+        }
 
         // Check if the user is already signed up
         if (User::where('email', $req->email)->exists()) {
@@ -52,7 +55,10 @@ class AuthController extends Controller
     public function userLogIn(Request $req)
     {
         // Validate the request body
-        $this->requestValidator($req);
+        $validation_result = $this->requestValidator($req);
+        if ($validation_result) {
+            return $validation_result;
+        }
 
         // Check if the user is already exists
         if (User::where('email', $req->email)->doesntExist()) {
@@ -104,7 +110,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return Response::json([
-                'success' => 'false',
+                'success' => false,
                 'error' => $validator->errors()
             ], 400);
         };
@@ -145,14 +151,14 @@ class AuthController extends Controller
     {
         // Validate the request body
         $validator = Validator::make($req->all(), [
-            'email' => 'required|email|max:255|unique:users',
+            'email' => 'required|email|max:255|',
             'password' => 'required',
             'provider' => 'required',
         ]);
 
         if ($validator->fails()) {
             return Response::json([
-                'success' => 'false',
+                'success' => false,
                 'error' => $validator->errors()
             ], 400);
         };
