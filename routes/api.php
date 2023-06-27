@@ -31,7 +31,7 @@ Route::prefix("v1/auth")->group(function () {
     Route::post("refreshToken", [AuthController::class, "refreshToken"]);
 });
 
-Route::prefix("v1/user")->group(function () {
+Route::middleware("api")->prefix("v1/user")->group(function () {
     Route::get("profile", [UserController::class, "userDetails"]);
     Route::put("editProfile", [UserController::class, "userDetailsUpdate"]);
 });

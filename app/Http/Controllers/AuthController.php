@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-// use App\Helpers\CatWikiHelpers;
-// use App\Services\CatWikiService;
-
+use App\Models\RefreshToken;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
+use Ramsey\Uuid\Uuid;
 
 class AuthController extends Controller
 {
@@ -34,13 +35,15 @@ class AuthController extends Controller
             'provider' => $req->provider
         ]);
 
-        // Remove password from collection
-        // $user->forget('password');
+        // Credentials
+        $credentials = $req->only('email', 'password');
+        $token = Auth::attempt($credentials);
 
         return Response::json(
             [
                 "success" => true,
-                "data" => $user->toArray()
+                "data" => $user->toArray(),
+                "authToken" => $token
             ],
             200
         );
@@ -70,10 +73,23 @@ class AuthController extends Controller
             ], 400);
         }
 
+        // Generate JWT with credentials
+        $credentials = $req->only('email', 'password');
+        $token = Auth::attempt($credentials);
+
+        // Generate Refresh Token
+        $refreshToken = RefreshToken::create([
+            'user_id' => $user->id,
+            'token' => Uuid::uuid4(),
+            'expiry_date' => Date::now()->addDay(1)
+        ]);
+
         return Response::json(
             [
                 "success" => true,
-                "data" => $user->toArray()
+                "data" => $user->toArray(),
+                "authToken" => $token,
+                "refreshToken" => $refreshToken->token
             ],
             200
         );
@@ -81,7 +97,48 @@ class AuthController extends Controller
 
     public function refreshToken(Request $req)
     {
-        return Response::json(["success" => true], 200);
+        // Validate the request body
+        $validator = Validator::make($req->all(), [
+            'refreshToken' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return Response::json([
+                'success' => 'false',
+                'error' => $validator->errors()
+            ], 400);
+        };
+
+        // Check if token exists
+        if (RefreshToken::where('token', $req->refreshToken)->doesntExist()) {
+            return Response::json([
+                'success' => false,
+                'message' => 'Invalid Token'
+            ], 400);
+        }
+
+        // Retrieve the details matching the given token
+        $user_token = RefreshToken::where('token', $req->refreshToken)->first();
+
+        // If token is valid
+        if (Date::now() > $user_token->expiry_date) {
+            RefreshToken::where('token', $req->refreshToken)->delete();
+            return Response::json([
+                'success' => false,
+                'message' => 'Token is expired'
+            ], 400);
+        }
+
+        // Retrieve user matching the given token
+        $user = User::where('id', $user_token->user_id)->first();
+
+        $token = Auth::login($user);
+
+        return Response::json([
+            "success" => true,
+            "authToken" => $token,
+            "refreshToken" => $req->refreshToken
+        ], 200);
     }
 
     private function requestValidator(Request $req)
